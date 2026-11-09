@@ -14,11 +14,12 @@ class SettingsDialog extends HTMLElement {
 
     this.#dialog = dom.create('dialog');
 
-    const apparentChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'apparent', checked: state.time.mode === 'apparent' });
-    const meanChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'mean', checked: state.time.mode === 'mean' });
+    const { settings } = state;
+    const apparentChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'apparent', checked: settings.mode === 'apparent' });
+    const meanChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'mean', checked: settings.mode === 'mean' });
 
-    dom.on(apparentChoice, 'click', () => state.time.mode = 'apparent');
-    dom.on(meanChoice, 'click', () => state.time.mode = 'mean');
+    dom.on(apparentChoice, 'click', () => settings.mode = 'apparent');
+    dom.on(meanChoice, 'click', () => settings.mode = 'mean');
 
     dom.add(this.#dialog, dom.create('form', [
       dom.create('div', 'Mode'),
@@ -32,11 +33,11 @@ class SettingsDialog extends HTMLElement {
       ])
     ]));
 
-    const hour12Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '12hr', checked: state.time.clockType === '12hr' });
-    const hour24Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '24hr', checked: state.time.clockType === '24hr' });
+    const hour12Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '12hr', checked: settings.clockType === '12hr' });
+    const hour24Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '24hr', checked: settings.clockType === '24hr' });
 
-    dom.on(hour12Choice, 'click', () => state.time.clockType = '12hr');
-    dom.on(hour24Choice, 'click', () => state.time.clockType = '24hr');
+    dom.on(hour12Choice, 'click', () => settings.clockType = '12hr');
+    dom.on(hour24Choice, 'click', () => settings.clockType = '24hr');
 
     dom.add(this.#dialog, dom.create('form', [
       dom.create('div', 'Clock Type'),

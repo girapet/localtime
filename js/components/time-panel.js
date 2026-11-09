@@ -11,16 +11,16 @@ class TimePanel extends HTMLElement {
     this.#time = dom.create('div');
     dom.add(shadow, [this.#time]);
 
-    state.on('time.*', (event) => this.#display(event));
+    state.on('settings.*,time.*', (event) => this.#display(event));
 
     this.#display();
   }
 
   #display(event = {}) {
-    const { mode } = state.time;
-    const { property } = event;
+    const { mode } = state.settings;
+    const { property, path } = event;
 
-    if (!property || property === mode || property === 'mode' || property === 'clockType') {
+    if (!property || property === mode || path.startsWith('settings.')) {
       const { hh, mm, ss, ampm } = toHms(state.time[mode]);
       this.#time.innerText = `${hh}:${mm}:${ss} ${ampm || ''}`;
     }

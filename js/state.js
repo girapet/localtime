@@ -1,9 +1,11 @@
 import observe from './helpers/observe.js';
 
 const state = {
-  time: {
+  settings: {
     mode: 'apparent',     // 'apparent', 'mean'
     clockType: '12hr',    // '12hr', '24hr'
+  },
+  time: {
     apparent: 0,          // seconds of apparent solar day
     mean: 0               // seconds of mean solar day
   },

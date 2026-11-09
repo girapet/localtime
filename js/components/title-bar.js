@@ -22,7 +22,7 @@ class TitleBar extends HTMLElement {
       this.#location
     ]));
 
-    state.on('time.mode', () => this.#displayTitle());
+    state.on('settings.mode', () => this.#displayTitle());
     state.on('location', () => this.#displayLocation());
 
     this.#displayTitle();
@@ -30,7 +30,7 @@ class TitleBar extends HTMLElement {
   }
 
   #displayTitle() {
-    const mode = state.time.mode === 'apparent' ? 'Apparent' : 'Mean';
+    const mode = state.settings.mode === 'apparent' ? 'Apparent' : 'Mean';
     this.#title.innerText = `Local ${mode} Time`;
   }
 

@@ -23,13 +23,13 @@ class EphemerisTile extends HTMLElement {
       this.#time
     ]);
 
-    state.on('time.mode,time.clockType,location', () => this.#display());
+    state.on('settings.*,location', () => this.#display());
 
     this.#display();
   }
 
   #display() {
-    const { mode } = state.time;
+    const { mode } = state.settings;
     const time = toMode(mode, state.ephemeris[this.#property]);
     const { hh, mm, ampm } = toHm(time);
     

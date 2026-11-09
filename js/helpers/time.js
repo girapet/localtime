@@ -34,7 +34,7 @@ export const toMode = (mode, unixTime) => {
 // hours/minutes/seconds extractors
 
 const getPeriod = (hour) => {
-  if (state.time.clockType === '24hr') {
+  if (state.settings.clockType === '24hr') {
     return;
   }
 
@@ -44,7 +44,7 @@ const getPeriod = (hour) => {
 const formatHour = (hour) => {
   let h = hour;
 
-  if (state.time.clockType === '12hr') {
+  if (state.settings.clockType === '12hr') {
     h = ((hour + 11) % 12) + 1;
   }
 
