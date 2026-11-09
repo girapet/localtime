@@ -1,3 +1,4 @@
+import SettingsDialog from './settings-dialog.js';
 import TitleBar from './title-bar.js';
 import TimePanel from './time-panel.js';
 import EphemerisTile from './ephemeris-tile.js';
@@ -14,9 +15,15 @@ const noLocation = () => {
 class App extends HTMLElement {
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
+    const settingsDialog = new SettingsDialog();
+    dom.add(shadow, settingsDialog);
+
+    const settingsButton = dom.create('button', 'Settings');
+    dom.on(settingsButton, 'click', () => settingsDialog.open());
 
     loop.initialize().then(() => {
       dom.add(shadow, [
+        settingsButton,
         new TitleBar(),
         new TimePanel(),
         new EphemerisTile('Midnight', 'startMidnight'),

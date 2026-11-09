@@ -1,4 +1,4 @@
-const { PI } = Math;
+const { cos, sin, acos, asin, atan2, PI } = Math;
 
 // angular unit conversion
 
@@ -7,11 +7,11 @@ export const toDegrees = (radians) => radians * 180 / PI;
 
 // trigonometric functions in degrees
 
-export const cosd = (x) => Math.cos(toRadians(x));
-export const sind = (x) => Math.sin(toRadians(x));
-export const acosd = (x) => toDegrees(Math.acos(x));
-export const asind = (x) => toDegrees(Math.asin(x));
-export const atan2d = (x, y) => toDegrees(Math.atan2(y, x));
+export const cosd = (x) => cos(toRadians(x));
+export const sind = (x) => sin(toRadians(x));
+export const acosd = (x) => toDegrees(acos(x));
+export const asind = (x) => toDegrees(asin(x));
+export const atan2d = (x, y) => toDegrees(atan2(y, x));
 
 // angular unwinding in degrees
 
