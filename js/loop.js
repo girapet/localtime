@@ -23,6 +23,15 @@ const distanceBetween = (loc1, loc2) => {
   return earthRadius * 2 * asind(sqrt((sind((lat1 - lat2) * 0.5)) ** 2 + cosd(lat1) * cosd(lat2) * (sind((lon1 - lon2) * 0.5)) ** 2));
 };
 
+const setTimes = (now) => {
+  const d = new Date(now);
+  state.time.zone = (d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds();
+  state.timezone.name = Intl.DateTimeFormat(undefined, { timeZoneName: 'long' }).format(d).split(',')[1];
+
+  state.time.apparent = toMode('apparent', now);
+  state.time.mean = toMode('mean', now);
+};
+
 const initialize = () => new Promise((resolve, reject) => {
   if (!geolocation) {
     reject();
@@ -35,15 +44,12 @@ const initialize = () => new Promise((resolve, reject) => {
     const now = time.now();
     state.ephemeris = sun.ephemeris(now, coords);
 
-    state.time.apparent = toMode('apparent', now);
-    state.time.mean = toMode('mean', now);
-
+    setTimes(now);
     resolve();
   }, reject);
 });
 
-
-const update = (now) => geolocation.getCurrentPosition((pos) => {
+const update = () => geolocation.getCurrentPosition((pos) => {
   const { coords } = pos;
   const { location } = state;
 
@@ -54,16 +60,17 @@ const update = (now) => geolocation.getCurrentPosition((pos) => {
     state.location = coords;
   }
 
+  const now = time.now();
+
   if (displaced || now >= state.ephemeris.endMidnight) {
     state.ephemeris = sun.ephemeris(now, coords);
   }
 
-  state.time.apparent = toMode('apparent', now);
-  state.time.mean = toMode('mean', now);
+  setTimes(now);
 });
 
 const run = () => {
-  update(time.now());
+  update();
   requestAnimationFrame(run);
 };
 

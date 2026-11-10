@@ -1,6 +1,6 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
-import { pad } from '../helpers/format.js';
+import { pad, capitalize } from '../helpers/format.js';
 
 const { abs, floor, round } = Math;
 
@@ -30,8 +30,8 @@ class TitleBar extends HTMLElement {
   }
 
   #displayTitle() {
-    const mode = state.settings.mode === 'apparent' ? 'Apparent' : 'Mean';
-    this.#title.innerText = `Local ${mode} Time`;
+    const { mode } = state.settings;
+    this.#title.innerText = `Local ${capitalize(mode)} Time`;
   }
 
   #displayLocation() {

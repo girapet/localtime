@@ -2,6 +2,7 @@ import SettingsDialog from './settings-dialog.js';
 import TitleBar from './title-bar.js';
 import TimePanel from './time-panel.js';
 import EphemerisTile from './ephemeris-tile.js';
+import OffsetPanel from './offset-panel.js';
 import loop from '../loop.js';
 import dom from '../helpers/dom.js';
 
@@ -31,7 +32,9 @@ class App extends HTMLElement {
         new EphemerisTile('Sunrise', 'startRise'),
         new EphemerisTile('Noon', 'noon'),
         new EphemerisTile('Sunset', 'endSet'),
-        new EphemerisTile('Dusk', 'endDusk')
+        new EphemerisTile('Dusk', 'endDusk'),
+        new OffsetPanel('zone'),
+        new OffsetPanel('local')
       ]);
 
       loop.run();

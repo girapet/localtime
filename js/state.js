@@ -7,7 +7,11 @@ const state = {
   },
   time: {
     apparent: 0,          // seconds of apparent solar day
-    mean: 0               // seconds of mean solar day
+    mean: 0,              // seconds of mean solar day
+    zone: 0               // seconds of day in current timezone
+  },
+  timezone: {
+    name: ''
   },
   location: {
     latitude: 0.0,        // decimal degrees

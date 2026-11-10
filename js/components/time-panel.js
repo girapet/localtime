@@ -22,7 +22,7 @@ class TimePanel extends HTMLElement {
 
     if (!property || property === mode || path.startsWith('settings.')) {
       const { hh, mm, ss, ampm } = toHms(state.time[mode]);
-      this.#time.innerText = `${hh}:${mm}:${ss} ${ampm || ''}`;
+      this.#time.innerText = `${hh}:${mm}:${ss} ${ampm}`;
     }
   }
 }
