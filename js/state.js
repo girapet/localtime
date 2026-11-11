@@ -28,4 +28,25 @@ const state = {
   }
 };
 
-export default observe(state);
+// get settings saved in localStorage if available
+
+const { settings } = state;
+
+Object.keys(settings).forEach((key) => {
+  const value = localStorage.getItem(key);
+
+  if (value) {
+    settings[key] = value;
+  }
+});
+
+// update localStorage on any setting change
+
+const observedState = observe(state);
+
+observedState.on('settings.*', (event) => {
+  const { property, newValue } = event;
+  localStorage.setItem(property, newValue);
+});
+
+export default observedState;
