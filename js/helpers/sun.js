@@ -7,21 +7,23 @@
 //    Willmann-Bell, 1991
 
 import { cosd, sind, acosd, asind, atan2d, rev, rev180, toDegrees } from './math.js';
+import { millisecondsPerDay } from './constants.js';
+
+const { abs, sqrt } = Math;
 
 // point conversion
 
 const rectToPolar = (r) => ({
   longitude: rev(atan2d(r.x, r.y)),
-  latitude: atan2d(Math.sqrt(r.x * r.x + r.y * r.y), r.z)
+  latitude: atan2d(sqrt(r.x * r.x + r.y * r.y), r.z)
 });
 
 // epoch time and Julian day functions
 
 const epoch = Date.UTC(1999, 11, 31);
-const millisecondsPerDay = 86400000;
 
 const unixToEpochTime = (unixTime) => (unixTime - epoch) / millisecondsPerDay;
-const epochToUnixTime = (epochTime) => epochTime * millisecondsPerDay + epoch;
+const epochToUnixTime = (epochTime) => epochTime ? epochTime * millisecondsPerDay + epoch : null;
 
 // astronomical functions
 
@@ -48,9 +50,9 @@ const sunEclipticPosition = (time) => {
   const M = sunMeanAnomaly(time);
   const ea = M + toDegrees(e * sind(M) * (1 + e * cosd(M)));
   const xv = cosd(ea) - e;
-  const yv = Math.sqrt(1 - e * e) * sind(ea);
+  const yv = sqrt(1 - e * e) * sind(ea);
   const v = atan2d(xv, yv);
-  const r = Math.sqrt(xv * xv + yv * yv);
+  const r = sqrt(xv * xv + yv * yv);
 
   return {
     x: r * cosd(v + w),
@@ -72,7 +74,7 @@ const findTransitTime = (time, observer, atNoon) => {
     t += delta / 360;
     const sun = rectToPolar(sunEquatorialPosition(t));
     delta = rev180(sun.longitude - siderealTime(t, observer.longitude + offset));
-  } while (Math.abs(delta) > 0.0001);
+  } while (abs(delta) > 0.0001);
 
   return t;
 };
@@ -83,14 +85,14 @@ const findAltitudeTime = (time, noon, observer, rising, altitude) => {
   const cosh0 = (sind(altitude) - sind(observer.latitude) * sind(sun.latitude)) / (cosd(observer.latitude) * cosd(sun.latitude));
 
   if (cosh0 > 1) {
-    return noon;
+    return;
   }
 
   const direction = rising ? -1 : 1;
   const midnight = findTransitTime(noon + direction * 0.5, observer, false);
 
   if (cosh0 < -1) {
-    return midnight;
+    return;
   }
 
   t = noon + direction * acosd(cosh0) / 360;
@@ -104,13 +106,13 @@ const findAltitudeTime = (time, noon, observer, rising, altitude) => {
     const newAltitude = asind(sind(observer.latitude) * sind(sun.latitude) + cosd(observer.latitude) * cosd(sun.latitude) * cosd(h));
     delta = newAltitude - altitude;
     i += 1;
-  } while (Math.abs(delta) > 0.0001 && i < 2000);
+  } while (abs(delta) > 0.0001 && i < 2000);
 
   if (rising) {
-    return midnight <= t && t <= noon ? t : null;
+    return midnight <= t && t <= noon ? t : undefined;
   }
 
-  return noon <= t && t <= midnight ? t : null;
+  return noon <= t && t <= midnight ? t : undefined;
 };
 
 const ephemeris = (unixTime, observer) => {

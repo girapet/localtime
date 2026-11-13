@@ -1,12 +1,7 @@
 import state from '../state.js';
+import { secondsPerHour, secondsPerHalfDay, secondsPerDay, millisecondsPerSecond, earthRotationDegreesPerHour } from './constants.js';
 
-const { floor, round } = Math;
-
-const secPerHalfDay = 12 * 60 * 60;
-const secPerDay = 24 * 60 * 60;
-const msPerSec = 1000;
-
-const earthRotSecPerDeg = 240;  // 3,600 seconds in an hour / 15 degrees of Earth rotation per hour = 240 seconds per degree
+const { floor } = Math;
 
 // Unix time to clock seconds converter
 
@@ -14,19 +9,19 @@ export const toMode = (mode, unixTime) => {
   if (mode === 'apparent') {
     const { startMidnight, noon, endMidnight } = state.ephemeris;
 
-    if (startMidnight <= unixTime && unixTime < noon) {
-      return floor(secPerHalfDay * (unixTime - startMidnight) / (noon - startMidnight));
+    if (unixTime < noon) {
+      return floor(secondsPerHalfDay * (unixTime - startMidnight) / (noon - startMidnight));
     }
 
-    if (noon <= unixTime && unixTime < endMidnight) {
-      return secPerHalfDay + floor(secPerHalfDay * (unixTime - noon) / (endMidnight - noon));
+    if (noon <= unixTime) {
+      return secondsPerHalfDay + floor(secondsPerHalfDay * (unixTime - noon) / (endMidnight - noon));
     }
 
     throw new Error('Specified unixTime is not within the ephemeris day');
   }
   else {
     const { longitude } = state.location;
-    return floor(unixTime / msPerSec + longitude * earthRotSecPerDeg) % secPerDay;
+    return floor(unixTime / millisecondsPerSecond + longitude * secondsPerHour / earthRotationDegreesPerHour) % secondsPerDay;
   }
 };
 

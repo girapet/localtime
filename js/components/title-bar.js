@@ -1,9 +1,9 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
-import { pad, capitalize, sexagesimalSeconds } from '../helpers/format.js';
+import { capitalize, sexagesimalSeconds } from '../helpers/format.js';
 import icon from '../styles/icon.js';
 
-const { abs, floor, round } = Math;
+const { abs } = Math;
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
@@ -70,7 +70,7 @@ class TitleBar extends HTMLElement {
 
   #displayLocation() {
     const { longitude } = state.location;
-    const seconds = round(abs(longitude) * 3600);
+    const seconds = abs(longitude) * 3600;
     const { unit: d, mm, ss } = sexagesimalSeconds(seconds);
     const dir = longitude >= 0 ? 'E' : 'W';
 

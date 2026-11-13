@@ -1,6 +1,7 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { capitalize, sexagesimalSeconds } from '../helpers/format.js';
+import { secondsPerHalfDay, secondsPerDay } from '../helpers/constants.js';
 
 const { abs } = Math;
 
@@ -87,7 +88,9 @@ class OffsetTile extends HTMLElement {
       offset = state.time[mode] - state.time.zone;
     }
 
-    offset = ((offset + 129600) % 86400) - 43200;
+    // make sure the offset is between -12 and 12 hours (in seconds)
+    
+    offset = ((offset + secondsPerDay - secondsPerHalfDay) % secondsPerDay) - secondsPerHalfDay;
 
     const dir = offset >= 0 ? 'ahead' : 'behind';
     const { unit: h, mm, ss } = sexagesimalSeconds(abs(offset));

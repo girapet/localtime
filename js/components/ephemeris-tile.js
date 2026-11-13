@@ -55,13 +55,20 @@ class EphemerisTile extends HTMLElement {
 
   #display() {
     const { mode, clockType } = state.settings;
-    const seconds = toMode(mode, state.ephemeris[this.#property]);
-    const { unit: hour, mm } = sexagesimalMinutes(seconds);
+    const unixTime = state.ephemeris[this.#property];
 
-    const h = formatHour(hour, clockType);
-    const period = getPeriod(hour, clockType);
-    
-    this.#time.innerText = `${h}:${mm} ${period}`;
+    if (!unixTime) {
+      this.#time.innerText = `-:--`;
+    }
+    else {
+      const seconds = toMode(mode, unixTime);
+      const { unit: hour, mm } = sexagesimalMinutes(seconds);
+
+      const h = formatHour(hour, clockType);
+      const period = getPeriod(hour, clockType);
+      
+      this.#time.innerText = `${h}:${mm} ${period}`;
+    }
   }
 }
 
