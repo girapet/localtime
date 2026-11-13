@@ -2,22 +2,10 @@ import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { toMode } from '../helpers/time.js';
 import { sexagesimalMinutes, formatHour, getPeriod } from '../helpers/format.js';
+import { tileStylesheet } from '../styles/tile-styles.js';
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
-  :host div {
-    box-sizing: border-box;
-    width: 100%;
-    height: fit-content;
-    text-align: center;
-  }
-  
-  #title {
-    font-weight: bold;
-    font-size: var(--default-font-size);
-    padding: 6px;
-  }
-
   #time {
     padding: 10px;
     font-size: 14pt;
@@ -26,8 +14,8 @@ stylesheet.replaceSync(`
 `);
 
 class EphemerisTile extends HTMLElement {
-  #title;
   #property;
+  #title;
   #time;
 
   constructor(title, property) {
@@ -38,7 +26,7 @@ class EphemerisTile extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [tileStylesheet, stylesheet];
 
     const title = dom.create('div', this.#title, { id: 'title' });
     this.#time = dom.create('div', { id: 'time' });

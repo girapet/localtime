@@ -2,24 +2,12 @@ import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { capitalize, sexagesimalSeconds } from '../helpers/format.js';
 import { secondsPerHalfDay, secondsPerDay } from '../helpers/constants.js';
+import { tileStylesheet } from '../styles/tile-styles.js';
 
 const { abs } = Math;
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
-  :host div {
-    box-sizing: border-box;
-    width: 100%;
-    height: fit-content;
-    text-align: center;
-  }
-  
-  #title {
-    font-weight: bold;
-    font-size: var(--default-font-size);
-    padding: 6px;
-  }
-
   #offset {
     padding: 10px;
     background-color: var(--content-color);
@@ -47,7 +35,7 @@ class OffsetTile extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [tileStylesheet, stylesheet];
 
     this.#title = dom.create('div', { id: 'title' });
     this.#hoursMinutes = dom.create('span', { className: 'large' });

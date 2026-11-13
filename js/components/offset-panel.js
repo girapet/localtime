@@ -2,34 +2,12 @@ import state from '../state.js';
 import OffsetTile from './offset-tile.js';
 import dom from '../helpers/dom.js';
 import { capitalize } from '../helpers/format.js';
+import { gridStylesheet } from '../styles/grid-styles.js';
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
-  :host {
-    display: block;
-    box-sizing: border-box;
-    position: relative;
-    width: 100%;
-    height: fit-content;
-  }
-  
-  #title {
-    display: block;
-    font-size: 16pt;
-    font-weight: bold;
-    margin-top: 12px;
-    padding: 6px;
-    text-align: center;
-    border-bottom: solid 1px var(--content-color);
-  }
-
   #grid {
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    box-sizing: border-box;
-    position: relative;
-    width: 100%;
-    height: fit-content;
   }
 `);
 
@@ -38,7 +16,7 @@ class OffsetPanel extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [gridStylesheet, stylesheet];
 
     this.#title = dom.create('span');
     const title = dom.create('div', { id: 'title' }, [

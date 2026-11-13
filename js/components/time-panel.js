@@ -1,15 +1,11 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { sexagesimalSeconds, formatHour, getPeriod } from '../helpers/format.js';
+import { boxStylesheet } from '../styles/box-styles.js';
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
   :host {
-    display: block;
-    box-sizing: border-box;
-    position: relative;
-    width: 100%;
-    height: fit-content;
     padding: 4px;
     text-align: center;
     font-weight: bold;
@@ -32,7 +28,7 @@ class TimePanel extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [boxStylesheet, stylesheet];
 
     this.#hoursMinutes = dom.create('span', { className: 'large' });
     this.#seconds = dom.create('span', { className: 'small' });

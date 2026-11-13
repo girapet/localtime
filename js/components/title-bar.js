@@ -1,6 +1,7 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { capitalize, sexagesimalSeconds } from '../helpers/format.js';
+import { boxStylesheet } from '../styles/box-styles.js';
 import icon from '../styles/icon.js';
 
 const { abs } = Math;
@@ -8,10 +9,6 @@ const { abs } = Math;
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
   :host {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    height: fit-content;
     padding: 6px;
     text-align: center;
   }
@@ -40,7 +37,7 @@ class TitleBar extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [boxStylesheet, stylesheet];
 
     this.#title = dom.create('span', { id: 'title' });
     this.#location = dom.create('span');
