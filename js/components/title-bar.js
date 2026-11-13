@@ -1,10 +1,38 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
-import { pad, capitalize } from '../helpers/format.js';
+import { pad, capitalize, sexagesimalSeconds } from '../helpers/format.js';
+import icon from '../styles/icon.js';
 
 const { abs, floor, round } = Math;
 
-// import sharedStylesheet from '../style/shared-stylesheet.js';
+const stylesheet = new CSSStyleSheet();
+stylesheet.replaceSync(`
+  :host {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: fit-content;
+    padding: 6px;
+    text-align: center;
+  }
+  
+  #title {
+    display: inline-block;
+    font-size: 20pt;
+    font-weight: bold;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+
+  #settings {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 24px;
+    height: 24px;
+    color: var(--text-color);
+  }
+`);
 
 class TitleBar extends HTMLElement {
   #title;
@@ -12,14 +40,20 @@ class TitleBar extends HTMLElement {
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    // shadow.adoptedStyleSheets = [sharedStylesheet];
+    shadow.adoptedStyleSheets = [stylesheet];
 
-    this.#title = dom.create('div');
-    this.#location = dom.create('div');
+    this.#title = dom.create('span', { id: 'title' });
+    this.#location = dom.create('span');
+
+    const app = dom.find('lt-app')[0];
+    const settingsButton = dom.create('div', icon('settings'), { id: 'settings' });
+    dom.on(settingsButton, 'click', () => app.settingsDialog.open());
 
     dom.add(shadow, dom.create('div', [
       this.#title,
-      this.#location
+      dom.create('br'),
+      this.#location,
+      settingsButton
     ]));
 
     state.on('settings.mode', () => this.#displayTitle());
@@ -37,26 +71,10 @@ class TitleBar extends HTMLElement {
   #displayLocation() {
     const { longitude } = state.location;
     const seconds = round(abs(longitude) * 3600);
-
-    let m = floor(seconds / 60);
-    let s = seconds - m * 60;
-
-    let d = floor(m / 60);
-    m -= d * 60;
-
-    if (s === 60) {
-      s = 0;
-      m +=1;
-    }
-
-    if (m === 60) {
-      m = 0;
-      d +=1;
-    }
-
+    const { unit: d, mm, ss } = sexagesimalSeconds(seconds);
     const dir = longitude >= 0 ? 'E' : 'W';
 
-    this.#location.innerText = `for ${abs(d)}° ${pad(m)}' ${pad(s)}" ${dir} longitude`;
+    this.#location.innerText = `for ${d}° ${mm}' ${ss}" ${dir} longitude`;
   }
 }
 

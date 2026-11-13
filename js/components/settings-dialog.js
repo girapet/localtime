@@ -2,53 +2,80 @@ import state from '../state.js';
 import dialogStyle from '../styles/dialog-styles.js';
 import dom from '../helpers/dom.js';
 
+const { settings } = state;
+
+const createChoice = (type, value, label) => {
+  const choice = dom.create('input', { type: 'radio', name: type, id: value, checked: settings[type] === value });
+  dom.on(choice, 'click', () => {
+    settings[type] = value;
+  });
+
+  const box = dom.create('div', { className: 'choice' }, [
+    choice,
+    dom.create('label', label, { htmlFor: value })
+  ]);
+  dom.on(box, 'click', () => choice.dispatchEvent(new MouseEvent('click')));
+
+  return box;
+};
+
+const dialogStylesheet = new CSSStyleSheet();
+dialogStylesheet.replaceSync(dialogStyle);
+
 const stylesheet = new CSSStyleSheet();
-stylesheet.replaceSync(dialogStyle);
+stylesheet.replaceSync(`
+  .setting:nth-child(n+1) {
+    margin-top: 8px;
+  }
+
+  .header {
+    font-weight: bold;
+    padding: 4px;
+  }
+  
+  .choice {
+    padding: 4px;
+    border: solid 1px var(--content-color);
+    border-radius: 2px;
+  }
+
+  .choice:has(input[type="radio"]:checked) {
+    border: solid 1px var(--text-color);
+  }
+
+  .choice:nth-child(n+1) {
+    margin-top: 4px;
+  }
+
+  input[type="radio"] {
+    accent-color: var(--text-color); 
+    margin-right: 6px;
+  }
+  
+  input[type="radio"]:focus {
+    outline: none;
+  }
+`);
 
 class SettingsDialog extends HTMLElement {
   #dialog;
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    shadow.adoptedStyleSheets = [stylesheet];
+    shadow.adoptedStyleSheets = [dialogStylesheet, stylesheet];
 
     this.#dialog = dom.create('dialog');
 
-    const { settings } = state;
-    const apparentChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'apparent', checked: settings.mode === 'apparent' });
-    const meanChoice = dom.create('input', { type: 'radio', name: 'mode', id: 'mean', checked: settings.mode === 'mean' });
-
-    dom.on(apparentChoice, 'click', () => settings.mode = 'apparent');
-    dom.on(meanChoice, 'click', () => settings.mode = 'mean');
-
-    dom.add(this.#dialog, dom.create('form', [
-      dom.create('div', 'Mode'),
-      dom.create('div', [
-        apparentChoice,
-        dom.create('label', 'Local Apparent Time', { htmlFor: 'apparent' })
-      ]),
-      dom.create('div', [
-        meanChoice,
-        dom.create('label', 'Local Mean Time', { htmlFor: 'mean' })
-      ])
+    dom.add(this.#dialog, dom.create('div', { className: 'setting' }, [
+      dom.create('div', 'Mode', { className: 'header' }),
+      createChoice('mode', 'apparent', 'Local Apparent Time'),
+      createChoice('mode', 'mean', 'Local Mean Time')
     ]));
 
-    const hour12Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '12hr', checked: settings.clockType === '12hr' });
-    const hour24Choice = dom.create('input', { type: 'radio', name: 'clock-type', id: '24hr', checked: settings.clockType === '24hr' });
-
-    dom.on(hour12Choice, 'click', () => settings.clockType = '12hr');
-    dom.on(hour24Choice, 'click', () => settings.clockType = '24hr');
-
-    dom.add(this.#dialog, dom.create('form', [
-      dom.create('div', 'Clock Type'),
-      dom.create('div', [
-        hour12Choice,
-        dom.create('label', '12-hour', { htmlFor: '12hr' })
-      ]),
-      dom.create('div', [
-        hour24Choice,
-        dom.create('label', '24-hour', { htmlFor: '24hr' })
-      ])
+    dom.add(this.#dialog, dom.create('div', { className: 'setting' }, [
+      dom.create('div', 'Clock Type', { className: 'header' }),
+      createChoice('clockType', '12hr', '12-hour'),
+      createChoice('clockType', '24hr', '24-hour')
     ]));
 
     dom.on(this.#dialog, 'click', (event) => {

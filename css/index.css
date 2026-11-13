@@ -1,3 +1,22 @@
-body {
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --background-color: #E8E8F8;
+  --content-color: #FAFAFF;
+  --text-color: #202040;
+  --backdrop-color: #20204080;
+
+  --app-max-width: 450px;
+  --app-max-height: 1000px;
+
+  --default-font-family: Arial, Helvetica, sans-serif;
+  --default-font-size: 12pt;
 }
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  font-family: var(--default-font-family);
+  font-size: var(--default-font-size);
+  color: var(--text-color);
+}
+

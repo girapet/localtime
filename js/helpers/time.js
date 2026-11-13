@@ -1,5 +1,4 @@
 import state from '../state.js';
-import { pad } from './format.js';
 
 const { floor, round } = Math;
 
@@ -31,41 +30,6 @@ export const toMode = (mode, unixTime) => {
   }
 };
 
-// hours/minutes/seconds extractors
-
-const getPeriod = (hour, clockType) => {
-  if (clockType === '24hr') {
-    return '';
-  }
-
-  return hour < 12 ? 'AM' : 'PM';
-};
-
-const formatHour = (hour, clockType) => {
-  let h = hour;
-
-  if (clockType === '12hr') {
-    h = ((hour + 11) % 12) + 1;
-  }
-
-  return `${h}`;
-};
-
-export const toHms = (seconds, clockType = state.settings.clockType) => {
-  let m = floor(seconds / 60);
-  const s = seconds - m * 60;
-  const h = floor(m / 60);
-  m -= h * 60;
-  return { h, m, s, hh: formatHour(h, clockType), mm: pad(m), ss: pad(s), ampm: getPeriod(h, clockType) };
-};
-
-export const toHm = (seconds, clockType = state.settings.clockType) => {
-  let m = round(seconds / 60);
-  const h = floor(m / 60);
-  m -= h * 60;
-  return { h, m, hh: formatHour(h, clockType), mm: pad(m), ampm: getPeriod(h, clockType) };
-};
-
 // current Unix time with development options for time shifting and speed
 
 const settings = {};
@@ -95,5 +59,5 @@ const set = (options) => {
 };
 
 
-export default { toMode, toHms, toHm, now, set };
+export default { toMode, now, set };
 

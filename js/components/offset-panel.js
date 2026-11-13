@@ -1,55 +1,67 @@
 import state from '../state.js';
+import OffsetTile from './offset-tile.js';
 import dom from '../helpers/dom.js';
 import { capitalize } from '../helpers/format.js';
-import { toHms } from '../helpers/time.js';
 
-const { abs } = Math;
+const stylesheet = new CSSStyleSheet();
+stylesheet.replaceSync(`
+  :host {
+    display: block;
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    height: fit-content;
+  }
+  
+  #title {
+    display: block;
+    font-size: 16pt;
+    font-weight: bold;
+    margin-top: 12px;
+    padding: 6px;
+    text-align: center;
+    border-bottom: solid 1px var(--content-color);
+  }
+
+  #grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    height: fit-content;
+  }
+`);
 
 class OffsetPanel extends HTMLElement {
-  #type;
-  #title;
-  #offset;
-
-  constructor(type) {
-    super();
-    this.#type = type;
-  }
+  #title
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
+    shadow.adoptedStyleSheets = [stylesheet];
 
-    this.#title = dom.create('div');
-    this.#offset = dom.create('div');
-    dom.add(shadow, [this.#title, this.#offset]);
+    this.#title = dom.create('span');
+    const title = dom.create('div', { id: 'title' }, [
+      this.#title
+    ]);
 
-    state.on('settings.*,time.*', (event) => this.#display(event));
+    const grid = dom.create('div', { id: 'grid' }, [
+      new OffsetTile('zone'),
+      new OffsetTile('local')
+    ]);
+
+    dom.add(shadow, [
+      title,
+      grid
+    ]);
+
+    state.on('settings.mode', () => this.#display());
 
     this.#display();
   }
 
-  #display(event = {}) {
-    const { mode } = state.settings;
-    const { property, path } = event;
-
-    if (!(!property || property === mode || path.startsWith('settings.'))) {
-      return;
-    }
-    
-    let offset;
-
-    if (this.#type === 'local') {
-      const otherMode = mode === 'apparent' ? 'mean' : 'apparent';
-      this.#title.innerText = `Offset from Local ${capitalize(otherMode)} Time`;
-      offset = state.time[mode] - state.time[otherMode];
-    }
-    else {
-      this.#title.innerText = `Offset from ${state.timezone.name}`;
-      offset = state.time[mode] - state.time.zone;
-    }
-
-    const sign = offset >= 0 ? '+' : '-';
-    const { hh, mm, ss } = toHms(abs(offset), '24hr');
-    this.#offset.innerText = `${sign}${hh}:${mm}:${ss}`;
+  #display() {
+    this.#title.innerHTML = `Local ${capitalize(state.settings.mode)} Time<br/>relative to`;
   }
 }
 

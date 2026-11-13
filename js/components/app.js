@@ -1,11 +1,25 @@
 import SettingsDialog from './settings-dialog.js';
 import TitleBar from './title-bar.js';
 import TimePanel from './time-panel.js';
-import EphemerisTile from './ephemeris-tile.js';
+import EphemerisPanel from './ephemeris-panel.js';
 import OffsetPanel from './offset-panel.js';
 import loop from '../loop.js';
 import dom from '../helpers/dom.js';
 
+const stylesheet = new CSSStyleSheet();
+stylesheet.replaceSync(`
+  :host {
+    position: relative;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    max-width: var(--app-max-width);
+    max-height: var(--app-max-height);
+    background-color: var(--background-color);
+  }
+`);
+
+//    
 const noLocation = () => {
   return dom.create('span', `This app needs your location.<br/><br/>
     Please enable location services on<br/>
@@ -14,27 +28,21 @@ const noLocation = () => {
 };
 
 class App extends HTMLElement {
+  settingsDialog;
+
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
-    const settingsDialog = new SettingsDialog();
-    dom.add(shadow, settingsDialog);
+    shadow.adoptedStyleSheets = [stylesheet];
 
-    const settingsButton = dom.create('button', 'Settings');
-    dom.on(settingsButton, 'click', () => settingsDialog.open());
+    this.settingsDialog = new SettingsDialog();
+    dom.add(shadow, this.settingsDialog);
 
     loop.initialize().then(() => {
       dom.add(shadow, [
-        settingsButton,
         new TitleBar(),
         new TimePanel(),
-        new EphemerisTile('Midnight', 'startMidnight'),
-        new EphemerisTile('Dawn', 'startDawn'),
-        new EphemerisTile('Sunrise', 'startRise'),
-        new EphemerisTile('Noon', 'noon'),
-        new EphemerisTile('Sunset', 'endSet'),
-        new EphemerisTile('Dusk', 'endDusk'),
-        new OffsetPanel('zone'),
-        new OffsetPanel('local')
+        new EphemerisPanel(),
+        new OffsetPanel()
       ]);
 
       loop.run();

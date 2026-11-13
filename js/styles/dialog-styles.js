@@ -2,11 +2,12 @@ export default `
   dialog {
     border: none;
     border-radius: 2px;
-    background-color: white;
+    color: var(--text-color);
+    background-color: var(--background-color);
   }
-  
+
   dialog::backdrop {
-    background-color: #00000080;
+    background-color: var(--backdrop-color);
     backdrop-filter: blur(5px);
   }
   
@@ -16,9 +17,15 @@ export default `
   }
 
   button {
-    margin-top: 6px;
-    margin-right: 8px;
+    font-family: var(--default-font-family);
+    font-size: var(--default-font-size);
     font-weight: bold;
-    color: #606060;
+    color: var(--text-color);
+    border: solid 1px var(--text-color);
+    border-radius: 2px;
+    background-color: var(--content-color);
+    margin-top: 12px;
+    margin-right: 8px;
+    padding: 6px 12px 6px 12px;
   }
 `;
