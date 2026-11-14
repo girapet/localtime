@@ -21,13 +21,20 @@ stylesheet.replaceSync(`
     margin-bottom: 4px;
   }
 
-  #settings {
+  .button {
     position: absolute;
-    right: 6px;
-    top: 6px;
+    right: 10px;
     width: 24px;
     height: 24px;
     color: var(--text-color);
+  }
+
+  #settings {
+    top: 6px;
+  }
+
+  #help {
+    top: 40px;
   }
 `);
 
@@ -43,14 +50,19 @@ class TitleBar extends HTMLElement {
     this.#location = dom.create('span');
 
     const app = dom.find('lt-app')[0];
-    const settingsButton = dom.create('div', icon('settings'), { id: 'settings' });
+
+    const settingsButton = dom.create('div', icon.settings, { id: 'settings', className: 'button' });
     dom.on(settingsButton, 'click', () => app.settingsDialog.open());
+
+    const helpButton = dom.create('div', icon.help, { id: 'help', className: 'button' });
+    dom.on(helpButton, 'click', () => app.helpDialog.open());
 
     dom.add(shadow, dom.create('div', [
       this.#title,
       dom.create('br'),
       this.#location,
-      settingsButton
+      settingsButton,
+      helpButton
     ]));
 
     state.on('settings.mode', () => this.#displayTitle());

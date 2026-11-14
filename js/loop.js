@@ -8,7 +8,7 @@ import time from './helpers/time.js';
 import { fixedGeolocation } from './helpers/geolocation.js';
 const geolocation = fixedGeolocation(42.3731022,-71.103081);
 
-// time.set({ start: new Date(2026, 10, 13, 23, 28).valueOf() });
+// time.set({ start: new Date(2026, 10, 14, 15, 0).valueOf() });
 // time.set({ speed: 2 });
 
 const { sqrt } = Math;
@@ -24,12 +24,15 @@ const distanceBetween = (loc1, loc2) => {
 };
 
 const setTimes = (now) => {
-  const d = new Date(now);
-  state.time.zone = (d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds();
-  state.timezone.name = Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).format(d).split(',')[1].trim();
+  const { time, timezone } = state;
+  time.utc = now;
 
-  state.time.apparent = toMode('apparent', now);
-  state.time.mean = toMode('mean', now);
+  const d = new Date(now);
+  time.zone = (d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds();
+  timezone.name = Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).format(d).split(',')[1].trim();
+
+  time.apparent = toMode('apparent', now);
+  time.mean = toMode('mean', now);
 };
 
 const initialize = () => new Promise((resolve, reject) => {

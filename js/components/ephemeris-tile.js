@@ -36,16 +36,19 @@ class EphemerisTile extends HTMLElement {
       this.#time
     ]);
 
-    state.on('settings.*,location', () => this.#display());
+    state.on('settings.*,ephemeris', () => this.#display());
 
     this.#display();
   }
 
   #display() {
     const { mode, clockType } = state.settings;
-    const unixTime = state.ephemeris[this.#property];
+    const { startMidnight, noon, endMidnight } = state.ephemeris;
+    const prop = this.#property;
 
-    if (!unixTime) {
+    const unixTime = state.ephemeris[prop];
+
+    if (prop !== 'startMidnight' && prop !== 'noon' && (unixTime === startMidnight || unixTime === noon || unixTime === endMidnight)) {
       this.#time.innerText = `-:--`;
     }
     else {

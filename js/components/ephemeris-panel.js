@@ -4,6 +4,10 @@ import { gridStylesheet } from '../styles/grid-styles.js';
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
+  #title {
+    border-top: solid 1px var(--content-color);
+  }
+
   #grid {
     grid-template-columns: 1fr 1fr 1fr;
   }

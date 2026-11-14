@@ -85,14 +85,14 @@ const findAltitudeTime = (time, noon, observer, rising, altitude) => {
   const cosh0 = (sind(altitude) - sind(observer.latitude) * sind(sun.latitude)) / (cosd(observer.latitude) * cosd(sun.latitude));
 
   if (cosh0 > 1) {
-    return;
+    return noon;
   }
 
   const direction = rising ? -1 : 1;
   const midnight = findTransitTime(noon + direction * 0.5, observer, false);
 
   if (cosh0 < -1) {
-    return;
+    return midnight;
   }
 
   t = noon + direction * acosd(cosh0) / 360;
