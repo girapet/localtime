@@ -1,7 +1,9 @@
 import state from '../state.js';
 import dom from '../helpers/dom.js';
-import { boxStylesheet } from '../styles/box-styles.js';
 import { cosd, sind } from '../helpers/math.js';
+import { sexagesimalMinutes } from '../helpers/format.js';
+import { millisecondsPerSecond } from '../helpers/constants.js';
+import { boxStylesheet } from '../styles/box-styles.js';
 
 const { round } = Math;
 
@@ -12,7 +14,7 @@ stylesheet.replaceSync(`
     justify-content: center;  
   }
 
-  #container {
+  #svg-container {
     width: 70%;
     height: auto;
     aspect-ratio: 1;
@@ -29,6 +31,36 @@ stylesheet.replaceSync(`
 
   #day-arc {
     fill: hsl(210, 85%, 80%);
+  }
+
+  #remaining-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #remaining-title {
+    text-align: center;
+    font-weight: bold;
+    padding: 6px;
+  }
+
+  #remaining-value {
+    text-align: center;
+    padding: 6px 10px 6px 10px;
+    background-color: var(--content-color);
+    display: none;
+  }
+
+  #remaining-time {
+    font-size: 14pt;
+  }
+
+  #remaining-percent {
+    font-size: 12pt;
   }
 `);
 
@@ -89,28 +121,54 @@ class DialPanel extends HTMLElement {
   #sun;
   #sunDilate;
   #sunBlur;
+  #remainingTitle;
+  #remainingValue;
+  #remainingTime;
+  #remainingPercent;
 
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
     shadow.adoptedStyleSheets = [boxStylesheet, stylesheet];
 
-    const container = dom.create('div', { id: 'container' }, svgContent);
-    this.#civilArc = dom.find(container, '#civil-arc')[0];
-    this.#dayArc = dom.find(container, '#day-arc')[0];
+    const svgContainer = dom.create('div', { id: 'svg-container' }, svgContent);
+    this.#civilArc = dom.find(svgContainer, '#civil-arc')[0];
+    this.#dayArc = dom.find(svgContainer, '#day-arc')[0];
 
-    this.#sun = dom.find(container, '#sun')[0];
-    this.#sunDilate = dom.find(container, '#sun-dilate')[0];
-    this.#sunBlur = dom.find(container, '#sun-blur')[0];
+    this.#sun = dom.find(svgContainer, '#sun')[0];
+    this.#sunDilate = dom.find(svgContainer, '#sun-dilate')[0];
+    this.#sunBlur = dom.find(svgContainer, '#sun-blur')[0];
+
+    this.#remainingTitle = dom.create('div', { id: 'remaining-title' });
+    this.#remainingTime = dom.create('span', { id: 'remaining-time' });
+    this.#remainingPercent = dom.create('span', { id: 'remaining-percent' });
+
+    this.#remainingValue = dom.create('div', { id: 'remaining-value' }, [
+      this.#remainingTime,
+      dom.create('br'),
+      this.#remainingPercent
+    ]);
+
+    const remainingContainer = dom.create('div', { id: 'remaining-container' }, [
+      dom.create('div', [
+        this.#remainingTitle,
+        this.#remainingValue
+      ])
+    ]);
     
     dom.add(shadow, [
-      container
+      svgContainer,
+      remainingContainer
     ]);
 
     state.on('location,ephemeris', () => this.#updateArcs());
-    state.on('time.utc', () => this.#updateSun());
+    state.on('time.utc', () => {
+      this.#updateSun();
+      this.#updateRemaining();
+    });
 
     this.#updateArcs();
     this.#updateSun();
+    this.#updateRemaining();
   }
 
   #updateArc(arc, start, noon, end) {
@@ -179,6 +237,47 @@ class DialPanel extends HTMLElement {
       this.#sunDilate.setAttribute('radius', 2 * ratio);
       this.#sunBlur.setAttribute('stdDeviation', 4 * ratio);
     }
+  }
+
+  #updateRemaining() {
+    const { utc: now } = state.time;
+    const { startMidnight, startDawn, noon, endDusk, endMidnight } = state.ephemeris;
+
+    const alwaysDaylight = startMidnight === startDawn && endDusk === endMidnight;
+    const alwaysNight = startDawn == noon && noon === endDusk;
+    
+    if (alwaysDaylight || alwaysNight) {
+      this.#remainingValue.style.display = 'none';
+      this.#remainingTitle.innerHTML = alwaysDaylight ? 'Total<br/>Daylight' : 'Total<br/>Night'
+      return;
+    }
+
+    this.#remainingValue.style.display = 'block';
+
+    let title;
+    let remaining;
+    let total;
+    
+    if (startDawn <= now && now <= endDusk) {
+      title = 'Daylight<br/>Remaining';
+      remaining = endDusk - now;
+      total = endDusk - startDawn;
+    }
+    else {
+      title = 'Night<br/>Remaining';
+      const pm = endMidnight - endDusk;
+      const am = startDawn - startMidnight;
+      remaining = now > endDusk ? endMidnight - now + am : startDawn - now;
+      total = am + pm;
+    }
+
+    this.#remainingTitle.innerHTML = title;
+
+    const { unit: h, mm } = sexagesimalMinutes(remaining / millisecondsPerSecond);
+    const percent = round(100 * remaining / total);
+
+    this.#remainingTime.innerHTML = `${h}:${mm}`;
+    this.#remainingPercent.innerHTML = `${percent}%`;
   }
 }
 

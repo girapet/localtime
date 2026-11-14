@@ -78,7 +78,7 @@ class OffsetTile extends HTMLElement {
 
     // make sure the offset is between -12 and 12 hours (in seconds)
     
-    offset = ((offset + secondsPerDay - secondsPerHalfDay) % secondsPerDay) - secondsPerHalfDay;
+    offset = ((offset + secondsPerDay + secondsPerHalfDay) % secondsPerDay) - secondsPerHalfDay;
 
     const dir = offset >= 0 ? 'ahead' : 'behind';
     const { unit: h, mm, ss } = sexagesimalSeconds(abs(offset));

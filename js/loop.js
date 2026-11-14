@@ -8,7 +8,7 @@ import time from './helpers/time.js';
 import { fixedGeolocation } from './helpers/geolocation.js';
 const geolocation = fixedGeolocation(42.3731022,-71.103081);
 
-// time.set({ start: new Date(2026, 10, 14, 15, 0).valueOf() });
+// time.set({ start: new Date(2026, 10, 14, 23, 25).valueOf(), speed: 120 });
 // time.set({ speed: 2 });
 
 const { sqrt } = Math;

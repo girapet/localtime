@@ -18,12 +18,12 @@ class EphemerisPanel extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'closed' });
     shadow.adoptedStyleSheets = [gridStylesheet, stylesheet];
 
-    const title = dom.create('div', 'Sun Events', { id: 'title' });
+    const title = dom.create('div', 'Today\'s Solar Events', { id: 'title' });
     const grid = dom.create('div', { id: 'grid' }, [
       new EphemerisTile('Sunrise', 'startRise'),
       new EphemerisTile('Solar Noon', 'noon'),
       new EphemerisTile('Sunset', 'endSet'),
-      new EphemerisTile('Dawn', 'startDawn'),
+      new EphemerisTile('Start of Dawn', 'startDawn'),
       new EphemerisTile('Solar Midnight', 'startMidnight'),
       new EphemerisTile('End of Dusk', 'endDusk')
     ]);
