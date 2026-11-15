@@ -2,6 +2,7 @@ import state from '../state.js';
 import dom from '../helpers/dom.js';
 import { capitalize, sexagesimalSeconds } from '../helpers/format.js';
 import { boxStylesheet } from '../styles/box-styles.js';
+import { buttonStyles } from '../styles/button-styles.js';
 import icon from '../styles/icon.js';
 
 const { abs } = Math;
@@ -21,19 +22,15 @@ stylesheet.replaceSync(`
     margin-bottom: 4px;
   }
 
-  .button {
-    position: absolute;
-    right: 10px;
-    width: 24px;
-    height: 24px;
-    color: var(--text-color);
-  }
+  ${buttonStyles}
 
   #settings {
+    right: 10px;
     top: 6px;
   }
 
   #help {
+    right: 10px;
     top: 40px;
   }
 `);

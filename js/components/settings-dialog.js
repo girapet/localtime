@@ -1,6 +1,7 @@
 import state from '../state.js';
 import dialogStyle from '../styles/dialog-styles.js';
 import dom from '../helpers/dom.js';
+import icon from '../styles/icon.js';
 
 const { settings } = state;
 
@@ -24,7 +25,7 @@ dialogStylesheet.replaceSync(dialogStyle);
 
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
-  .setting:nth-child(n+1) {
+  .setting:nth-child(n+2) {
     margin-top: 8px;
   }
 
@@ -43,17 +44,13 @@ stylesheet.replaceSync(`
     border: solid 1px var(--text-color);
   }
 
-  .choice:nth-child(n+1) {
+  .choice:nth-child(n+2 of .choice) {
     margin-top: 4px;
   }
 
   input[type="radio"] {
     accent-color: var(--text-color); 
     margin-right: 6px;
-  }
-  
-  input[type="radio"]:focus {
-    outline: none;
   }
 `);
 
@@ -64,19 +61,23 @@ class SettingsDialog extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'closed' });
     shadow.adoptedStyleSheets = [dialogStylesheet, stylesheet];
 
-    this.#dialog = dom.create('dialog');
+    const closeButton = dom.create('div', icon.close, { id: 'close', className: 'button' });
 
-    dom.add(this.#dialog, dom.create('div', { className: 'setting' }, [
-      dom.create('div', 'Mode', { className: 'header' }),
-      createChoice('mode', 'apparent', 'Local Apparent Time'),
-      createChoice('mode', 'mean', 'Local Mean Time')
-    ]));
-
-    dom.add(this.#dialog, dom.create('div', { className: 'setting' }, [
-      dom.create('div', 'Clock Type', { className: 'header' }),
-      createChoice('clockType', '12hr', '12-hour'),
-      createChoice('clockType', '24hr', '24-hour')
-    ]));
+    this.#dialog = dom.create('dialog', [
+      dom.create('div', [
+        dom.create('div', { className: 'setting' }, [
+          dom.create('div', 'Mode', { className: 'header' }),
+          createChoice('mode', 'apparent', 'Local Apparent Time'),
+          createChoice('mode', 'mean', 'Local Mean Time')
+        ]),
+        dom.create('div', { className: 'setting' }, [
+          dom.create('div', 'Clock Type', { className: 'header' }),
+          createChoice('clockType', '12hr', '12-hour'),
+          createChoice('clockType', '24hr', '24-hour')
+        ]),
+        closeButton
+      ])
+    ]);
 
     dom.on(this.#dialog, 'click', (event) => {
       if (event.target === this.#dialog) {
@@ -84,10 +85,8 @@ class SettingsDialog extends HTMLElement {
       }
     });
 
-    const closeButton = dom.create('button', 'Close');
     dom.on(closeButton, 'click', () => this.#close());
     
-    dom.add(this.#dialog, [closeButton])
     dom.add(shadow, this.#dialog);
   }
 
