@@ -15,10 +15,10 @@ stylesheet.replaceSync(`
   }
 
   #svg-container {
-    width: 70%;
+    width: 65%;
     height: auto;
     aspect-ratio: 1;
-    margin-top: 18px;
+    margin-top: 10px;
   }
   
   #night-arc {
