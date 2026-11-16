@@ -1,0 +1,28 @@
+{
+  "name": "localtime",
+  "version": "1.0.0",
+  "description": "A local time clock for mobile devices",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup --config"
+  },
+  "homepage": "https://github.com/girapet/localtime#readme",
+  "bugs": {
+    "url": "https://github.com/girapet/localtime/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/girapet/localtime.git"
+  },
+  "license": "MIT",
+  "author": "Peter Girard",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^1.0.2",
+    "rollup": "^4.68.4"
+  },
+  "dependencies": {
+    "sharp": "^0.35.5",
+    "to-ico": "^1.1.5"
+  }
+}

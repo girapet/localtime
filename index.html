@@ -2,9 +2,24 @@
 
 <html>
 <head>
+  <script>
+    const isProduction = new URL(document.location.href).hostname !== 'localhost';
+
+    if (isProduction && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="icon" href="favicon.ico?v=1">
   <title>Local Time</title>
-  <link href="./css/index.css" rel="stylesheet" />
 </head>
-<script type="module" src="js/index.js"></script>
+<body></body>
+<script>
+  const script = document.createElement('script');
+  script.src = isProduction ? 'js/dist/index.js' : 'js/index.js';
+  script.type = 'module';
+  document.body.appendChild(script);
+</script>
 </html>
