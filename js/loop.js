@@ -3,10 +3,10 @@ import { cosd, sind, asind } from './helpers/math.js';
 import sun from './helpers/sun.js';
 import { toMode } from './helpers/time.js';
 import time from './helpers/time.js';
-// import { geolocation } from './helpers/geolocation.js';
+import { geolocation } from './helpers/geolocation.js';
 
-import { fixedGeolocation } from './helpers/geolocation.js';
-const geolocation = fixedGeolocation(40.7814156,-73.9664438);
+// import { fixedGeolocation } from './helpers/geolocation.js';
+// const geolocation = fixedGeolocation(40.7814156,-73.9664438);
 
 // time.set({ start: new Date(2026, 10, 14, 23, 25).valueOf(), speed: 120 });
 // time.set({ speed: 2 });
