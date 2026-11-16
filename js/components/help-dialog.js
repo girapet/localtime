@@ -80,13 +80,6 @@ const content = `
     down.  Travel in the other direction and the time difference is eight hours (5 + 3), an
     apparent speed up.  In this app such time differences are visible from moment 
     to moment.</p>
-  <p class="heading">Accuracy</p>
-  <p>The timing of this app was compared to values computed in the 
-    <a href="https://ssd.jpl.nasa.gov/horizons/app.html" target="_blank">Horizons System</a>
-    at the Jet Propulsion Laboratory and the 
-    <a href="https://www.kso.ac.at/beobachtungen/ephemeris_en.php" target="_blank">Solar Ephemeris 
-    Calculator</a> at the University of Graz, Germany.  It matched solar noon in both systems to 
-    about one second.</p>
   <p class="heading">Further Reading</p>
   <p>See these Wikipedia articles for more information.
     <ul>
