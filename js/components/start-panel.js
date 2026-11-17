@@ -24,10 +24,6 @@ class StartPanel extends HTMLElement {
   showMessage(message) {
     this.#message.innerHTML = message;
   }
-
-  hide() {
-    this.#message.style.display = 'none';
-  }
 }
 
 customElements.define('lt-start-panel', StartPanel);

@@ -69,6 +69,8 @@ export const get = (id) => document.getElementById(id);
 
 export const on = (target, type, handler, options) => each(target, (t) => t.addEventListener(type, handler, options));
 
+export const remove = (target) => each(target, (t) => t.parentNode.removeChild(t));
+
 export const style = (target, styles) => each(target, (e) => {
   Object.entries(styles).forEach((s) => {
     const [ name, value ] = s;
@@ -76,4 +78,4 @@ export const style = (target, styles) => each(target, (e) => {
   });
 });
 
-export default { add, create, each, find, get, on, style };
+export default { add, create, each, find, get, on, remove, style };

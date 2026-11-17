@@ -1,8 +1,7 @@
-import state from './state.js';
-import sun from './helpers/sun.js';
-import { toMode } from './helpers/time.js';
-import time from './helpers/time.js';
-import location from './location.js';
+import state from '../state.js';
+import sun from '../helpers/sun.js';
+import { toMode } from '../helpers/time.js';
+import time from '../helpers/time.js';
 
 // time.set({ start: new Date(2026, 10, 14, 23, 25).valueOf(), speed: 120 });
 // time.set({ speed: 2 });
@@ -19,16 +18,11 @@ const setTimes = (now) => {
   time.mean = toMode('mean', now);
 };
 
-const initialize = () => new Promise((resolve, reject) => {
-  location.initialize().then(() => {
-    const now = time.now();
-    state.ephemeris = sun.ephemeris(now, state.location);
-
-    setTimes(now);
-    resolve();
-  })
-  .catch((error) => reject(error));
-});
+const initialize = () => {
+  const now = time.now();
+  state.ephemeris = sun.ephemeris(now, state.location);
+  setTimes(now);
+};
 
 const update = () => {
   const now = time.now();

@@ -6,7 +6,8 @@ import TimePanel from './time-panel.js';
 import DialPanel from './dial-panel.js';
 import EphemerisPanel from './ephemeris-panel.js';
 import OffsetPanel from './offset-panel.js';
-import loop from '../loop.js';
+import locationService from '../services/location-service.js';
+import timeService from '../services/time-service.js';
 import dom from '../helpers/dom.js';
 
 const stylesheet = new CSSStyleSheet();
@@ -26,7 +27,7 @@ class App extends HTMLElement {
   settingsDialog;
   helpDialog;
 
-  connectedCallback() {
+  async connectedCallback() {
     const shadow = this.attachShadow({ mode: 'closed' });
     shadow.adoptedStyleSheets = [stylesheet];
 
@@ -36,8 +37,10 @@ class App extends HTMLElement {
       startPanel
     ]);
 
-    loop.initialize().then(() => {
-      startPanel.hide();
+    try {
+      await locationService.initialize();
+      timeService.initialize();
+      dom.remove(startPanel);
 
       this.settingsDialog = new SettingsDialog();
       this.helpDialog = new HelpDialog();
@@ -52,11 +55,12 @@ class App extends HTMLElement {
         new OffsetPanel()
       ]);
 
-      loop.run();
-    }, 
-    (error) => {
+      locationService.run();
+      timeService.run();
+    }
+    catch(error) {
       startPanel.showMessage(error);
-    });
+    }
   }
 }
 
