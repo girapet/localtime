@@ -32,11 +32,11 @@ const update = () => {
   }
 
   setTimes(now);
+  requestAnimationFrame(update);
 };
 
 const run = () => {
   update();
-  requestAnimationFrame(run);
 };
 
 export default { initialize, run };

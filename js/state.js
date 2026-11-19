@@ -16,9 +16,10 @@ const state = {
   },
   location: {
     latitude: 0.0,        // decimal degrees
-    longitude: 0.0
+    longitude: 0.0,
+    utc: 0                // UTC milliseconds of reading
   },
-  ephemeris: {            // UTC milliseconds, Unix time
+  ephemeris: {            // UTC milliseconds
     startMidnight: 0,
     startDawn: 0,
     startRise: 0,

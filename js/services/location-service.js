@@ -1,19 +1,28 @@
 import state from '../state.js';
 import sun from '../helpers/sun.js';
-import { cosd, sind, asind } from '../helpers/math.js';
+import time from '../helpers/time.js';
+import { distanceBetween, trajectoryPoint } from '../helpers/measure.js';
 
-const { sqrt } = Math;
+// // high-speed testing
+
+// import travelingGeolocation from './traveling-geolocation.js';
+// const boston = { latitude: 42.361468, longitude: -71.0097878 };
+// const seattle = { latitude: 47.4517171, longitude: -122.3124929 };
+// const london = { latitude: 51.4693031, longitude: -0.4671464 };
+// const geolocation = travelingGeolocation(boston, seattle, 900);
 
 const { geolocation } = navigator;
 
-const earthRadius = 6371008.8;     // meters
-const displacementTolerance = 250  // meters
+const speedTolerance = 5;      // meters per second, about 11 MPH or 18 KPH
 
-const distanceBetween = (loc1, loc2) => {
-  const { latitude: lat1, longitude: lon1 } = loc1;
-  const { latitude: lat2, longitude: lon2 } = loc2;
+let previousLocation;
+let currentLocation;
+let baseDistance;
+let baseTimeOffset;
 
-  return earthRadius * 2 * asind(sqrt((sind((lat1 - lat2) * 0.5)) ** 2 + cosd(lat1) * cosd(lat2) * (sind((lon1 - lon2) * 0.5)) ** 2));
+const toLocation = (position) => {
+  const { latitude, longitude } = position.coords;
+  return { latitude, longitude, utc: time.now() };
 };
 
 const initialize = () => new Promise(async (resolve, reject) => {
@@ -25,7 +34,9 @@ const initialize = () => new Promise(async (resolve, reject) => {
   }
 
   geolocation.getCurrentPosition((position) => {
-    state.location = position.coords;
+    state.location = toLocation(position);
+    previousLocation = state.location;
+    currentLocation = state.location;
     resolve();
   },
   () => {
@@ -33,18 +44,50 @@ const initialize = () => new Promise(async (resolve, reject) => {
   });
 });
 
+// The update cycle of geolocation.watchPosition can be several seconds on a mobile device.
+// This would be a problem when traveling at high speeds, as it would normally cause stuttering
+// in the displayed time. In this code, we keep track of the previous two locations and at high
+// speeds plot a trajectory through them to calculate the latest location.
+
+const update = () => {
+  if (baseDistance) {
+    const utc = time.now();
+    const currentTimeOffset = (utc - previousLocation.utc) * 0.001;      // seconds
+    const distance = currentTimeOffset * baseDistance / baseTimeOffset;  // meters
+
+    const trajectoryLocation = trajectoryPoint(previousLocation, currentLocation, distance);
+    trajectoryLocation.utc = utc;
+
+    state.location = trajectoryLocation;
+    state.ephemeris = sun.ephemeris(state.location.utc, state.location);
+  }
+  
+  requestAnimationFrame(update);
+};
+
 const run = () => {
   geolocation.watchPosition((position) => {
-    const { coords } = position;
-    const { location } = state;
+    state.location = toLocation(position);
+    state.ephemeris = sun.ephemeris(state.location.utc, state.location);
 
-    const displacement = distanceBetween(coords, location);
+    previousLocation = currentLocation;
+    currentLocation = state.location;
 
-    if (displacement >= displacementTolerance) {
-      state.location = coords;
-      state.ephereris = sun.ephemeris(state.time.utc, coords);
+    baseDistance = 0;
+    baseTimeOffset = 0;
+
+    const distance = distanceBetween(previousLocation, currentLocation);      // meters
+    const timeOffset = (currentLocation.utc - previousLocation.utc) * 0.001;  // seconds
+    const speed = distance / timeOffset;                                      // meters per second
+
+    if (speed >= speedTolerance) {
+      baseDistance = distance;
+      baseTimeOffset = timeOffset;
     }
   });
+
+  update();
 };
+
 
 export default { initialize, run };
