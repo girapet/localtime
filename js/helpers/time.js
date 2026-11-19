@@ -3,29 +3,29 @@ import { secondsPerHour, secondsPerHalfDay, secondsPerDay, millisecondsPerSecond
 
 const { floor } = Math;
 
-// Unix time to clock seconds converter
+// UTC time to clock seconds converter
 
-export const toMode = (mode, unixTime) => {
+export const toMode = (mode, utc) => {
   if (mode === 'apparent') {
     const { startMidnight, noon, endMidnight } = state.ephemeris;
 
-    if (unixTime < noon) {
-      return floor(secondsPerHalfDay * (unixTime - startMidnight) / (noon - startMidnight));
+    if (utc < noon) {
+      return secondsPerHalfDay * (utc - startMidnight) / (noon - startMidnight);
     }
 
-    if (noon <= unixTime) {
-      return secondsPerHalfDay + floor(secondsPerHalfDay * (unixTime - noon) / (endMidnight - noon));
+    if (noon <= utc) {
+      return secondsPerHalfDay + secondsPerHalfDay * (utc - noon) / (endMidnight - noon);
     }
 
-    throw new Error('Specified unixTime is not within the ephemeris day');
+    throw new Error('Specified UTC time is not within the ephemeris day');
   }
   else {
     const { longitude } = state.location;
-    return floor(unixTime / millisecondsPerSecond + longitude * secondsPerHour / earthRotationDegreesPerHour) % secondsPerDay;
+    return (utc / millisecondsPerSecond + longitude * secondsPerHour / earthRotationDegreesPerHour) % secondsPerDay;
   }
 };
 
-// current Unix time with development options for time shifting and speed
+// current UTC time with development options for time shifting and speed
 
 const settings = {};
 

@@ -40,25 +40,21 @@ class TimePanel extends HTMLElement {
       this.#period
     ]);
 
-    state.on('settings.*,time.*', (event) => this.#display(event));
+    state.on('settings.*,time', (event) => this.#display(event));
 
     this.#display();
   }
 
   #display(event = {}) {
     const { mode, clockType } = state.settings;
-    const { property, path } = event;
+    const { unit: hour, mm, ss } = sexagesimalSeconds(state.time[mode]);
 
-    if (!property || property === mode || path.startsWith('settings.')) {
-      const { unit: hour, mm, ss } = sexagesimalSeconds(state.time[mode]);
+    const h = formatHour(hour, clockType);
+    const period = getPeriod(hour, clockType);
 
-      const h = formatHour(hour, clockType);
-      const period = getPeriod(hour, clockType);
-
-      this.#hoursMinutes.innerText = `${h}:${mm}`;
-      this.#seconds.innerText = `:${ss}`;
-      this.#period.innerHTML = period ? `&nbsp;${period}` : '';
-    }
+    this.#hoursMinutes.innerText = `${h}:${mm}`;
+    this.#seconds.innerText = `:${ss}`;
+    this.#period.innerHTML = period ? `&nbsp;${period}` : '';
   }
 }
 

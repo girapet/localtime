@@ -100,16 +100,16 @@ const svgContent = `
   </svg>
 `;
 
-const getAngle = (unixTime) => {
+const getAngle = (utc) => {
   const { startMidnight, noon, endMidnight } = state.ephemeris;
 
   let angle;
 
-  if (startMidnight <= unixTime && unixTime <= noon) {
-    angle = 270 - 180 * (unixTime - startMidnight) / (noon - startMidnight);
+  if (startMidnight <= utc && utc <= noon) {
+    angle = 270 - 180 * (utc - startMidnight) / (noon - startMidnight);
   }
   else {
-    angle = 90 - 180 * (unixTime - noon) / (endMidnight - noon);
+    angle = 90 - 180 * (utc - noon) / (endMidnight - noon);
   }
 
   return angle;
@@ -161,7 +161,7 @@ class DialPanel extends HTMLElement {
     ]);
 
     state.on('location,ephemeris', () => this.#updateArcs());
-    state.on('time.utc', () => {
+    state.on('time', () => {
       this.#updateSun();
       this.#updateRemaining();
     });

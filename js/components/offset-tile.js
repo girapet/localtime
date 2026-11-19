@@ -51,18 +51,13 @@ class OffsetTile extends HTMLElement {
       offset
     ]);
 
-    state.on('settings.*,time.*', (event) => this.#display(event));
+    state.on('settings.*,time', (event) => this.#display(event));
 
     this.#display();
   }
 
   #display(event = {}) {
     const { mode } = state.settings;
-    const { property, path } = event;
-
-    if (!(!property || property === mode || path.startsWith('settings.'))) {
-      return;
-    }
     
     let offset;
 

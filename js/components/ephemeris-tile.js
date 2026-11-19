@@ -46,13 +46,13 @@ class EphemerisTile extends HTMLElement {
     const { startMidnight, noon, endMidnight } = state.ephemeris;
     const prop = this.#property;
 
-    const unixTime = state.ephemeris[prop];
+    const utc = state.ephemeris[prop];
 
-    if (prop !== 'startMidnight' && prop !== 'noon' && (unixTime === startMidnight || unixTime === noon || unixTime === endMidnight)) {
+    if (prop !== 'startMidnight' && prop !== 'noon' && (utc === startMidnight || utc === noon || utc === endMidnight)) {
       this.#time.innerText = `-:--`;
     }
     else {
-      const seconds = toMode(mode, unixTime);
+      const seconds = toMode(mode, utc);
       const { unit: hour, mm } = sexagesimalMinutes(seconds);
 
       const h = formatHour(hour, clockType);
