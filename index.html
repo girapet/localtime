@@ -6,7 +6,7 @@
     const isProduction = new URL(document.location.href).hostname !== 'localhost';
 
     if (isProduction && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js', { type: 'module' });
     }
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -16,11 +16,10 @@
   <title>Local Time</title>
 </head>
 <body></body>
-<!-- <script>
+<script>
   const script = document.createElement('script');
   script.src = isProduction ? 'js/dist/index.js' : 'js/index.js';
   script.type = 'module';
   document.body.appendChild(script);
-</script> -->
-<script src="js/index.js" type="module"></script>
+</script>
 </html>

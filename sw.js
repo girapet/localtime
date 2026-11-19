@@ -1,4 +1,4 @@
-const VERSION = '0.0.5';
+import version from './js/version.js';
 
 const precacheUrls = [
   './css/index.css',
@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     await self.skipWaiting();
 
-    const cache = await caches.open(VERSION);
+    const cache = await caches.open(version);
     await cache.addAll(precacheUrls);
   })());
 });
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const cacheNames = await caches.keys();
-    const cachesToDelete = cacheNames.filter(cacheName => cacheName !== VERSION);
+    const cachesToDelete = cacheNames.filter(cacheName => cacheName !== version);
 
     if (cachesToDelete.length) {
       await Promise.all(cachesToDelete.map(cacheToDelete => caches.delete(cacheToDelete)));

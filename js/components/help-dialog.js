@@ -1,4 +1,5 @@
 import state from '../state.js';
+import version from '../version.js';
 import dialogStyle from '../styles/dialog-styles.js';
 import dom from '../helpers/dom.js';
 import icon from '../styles/icon.js';
@@ -37,6 +38,11 @@ stylesheet.replaceSync(`
   
   li {
     margin-bottom: 6px;
+  }
+  
+  #version {
+    font-size: 10pt;
+    opacity: 0.5;
   }
 `);
 
@@ -87,6 +93,7 @@ const content = `
       <li><a href="https://en.wikipedia.org/wiki/Equation_of_time" target="_blank">Equation of Time</a>
     </ul>
   </p>
+  <p id="version"></p>
 `;
 
 class HelpDialog extends HTMLElement {
@@ -99,6 +106,7 @@ class HelpDialog extends HTMLElement {
 
     const closeButton = dom.create('div', icon.close, { id: 'close', className: 'button' });
     this.#content = dom.create('div', content, { id: 'content' });
+    dom.find(this.#content, '#version')[0].innerText = `version ${version}`;
 
     this.#dialog = dom.create('dialog', [
       dom.create('div', [
